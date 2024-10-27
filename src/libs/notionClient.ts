@@ -107,10 +107,16 @@ class NotionClient {
     try {
       const response = await fetch(url, options);
       if (!response.ok) {
+        if (response.status === 404) {
+          return {
+            data: null,
+            status: response.status,
+          };
+        }
         throw new Error(`Error updating database item: ${response.statusText}`);
       }
       const data = await response.json();
-      return data;
+      return { data, status: response.status };
     } catch (error) {
       console.error("Error updating database item:", error);
       throw error;

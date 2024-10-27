@@ -131,18 +131,29 @@ app.post("/boards-webhook-updated", async (c) => {
   console.log("ボット以外の更新");
 
   const title = body.resource.fields["System.Title"]?.newValue;
+
   // タイトルが変わっていなければ無視
   if (title == null) {
     console.log("タイトルが変わっていない");
     return c.json({ message: "Completed." });
   }
 
-  const updated = await notionClient.updateDatabaseItemWithAzureBoardItemId(
-    notionPageId,
-    itemId,
-    title,
-  );
-  return c.json({ updated });
+  const { data, status } =
+    await notionClient.updateDatabaseItemWithAzureBoardItemId(
+      notionPageId,
+      itemId,
+      title,
+    );
+
+  if (status === 404) {
+    // Notion の更新対象アイテムが無ければ、Azure Boards のアイテムを削除
+    const azureBoardsClient = c.get("azureBoardsClient");
+    const { token } = await credential.getToken(azureDevopsScope);
+    const deleted = await azureBoardsClient.deleteWorkItem(token, itemId);
+    return c.json({ deleted });
+  }
+
+  return c.json(data);
 });
 
 app.post("/boards-created-webhook", async (c) => {

@@ -150,6 +150,28 @@ class AzureBoardsClient {
       },
     ]);
   }
+
+  async deleteWorkItem(token: string, id: number) {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}wit/workitems/${id}?api-version=7.0`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json-patch+json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      if (!response.ok) {
+        throw new Error(`Error deleting work item: ${response.statusText}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error("Failed to delete work item:", error);
+      throw error;
+    }
+  }
 }
 
 export default AzureBoardsClient;
