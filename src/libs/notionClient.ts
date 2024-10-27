@@ -146,12 +146,15 @@ class NotionClient {
   async deleteDatabaseItem(notionItemId: string) {
     const url = `https://api.notion.com/v1/pages/${notionItemId}`;
     const options = {
-      method: "DELETE",
+      method: "PATCH",
       headers: {
         Authorization: `Bearer ${this.secret}`,
         "Content-Type": "application/json",
         "Notion-Version": "2022-06-28",
       },
+      body: JSON.stringify({
+        archived: true,
+      }),
     };
 
     try {
