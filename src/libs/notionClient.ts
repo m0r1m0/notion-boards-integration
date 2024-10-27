@@ -7,7 +7,7 @@ class NotionClient {
     this.secret = secret;
   }
 
-  async getDatabaseItems(databaseId: string) {
+  async getDatabaseItems(databaseId: string, filter?: any) {
     const url = `https://api.notion.com/v1/databases/${databaseId}/query`;
     const options = {
       method: "POST",
@@ -16,7 +16,9 @@ class NotionClient {
         "Content-Type": "application/json",
         "Notion-Version": "2022-06-28",
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify({
+        filter,
+      }),
     };
 
     try {
@@ -32,6 +34,24 @@ class NotionClient {
       console.error("Error fetching database items:", error);
       throw error;
     }
+  }
+
+  async getActiveDatabaseItem(databaseId: string) {
+    return this.getDatabaseItems(databaseId, {
+      property: "ステータス",
+      status: {
+        does_not_equal: "アーカイブ",
+      },
+    });
+  }
+
+  async getArchivedDatabaseItem(databaseId: string) {
+    return this.getDatabaseItems(databaseId, {
+      property: "ステータス",
+      status: {
+        equals: "アーカイブ",
+      },
+    });
   }
 
   async createDatabaseItem(

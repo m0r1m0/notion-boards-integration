@@ -31,7 +31,7 @@ export async function timerTrigger(
     const { token } = await credential.getToken(azureDevopsScope);
 
     // Notion のデータベースからアイテムを取得
-    const pages = await notionClient.getDatabaseItems(
+    const pages = await notionClient.getActiveDatabaseItem(
       process.env["NOTION_DATABASE_ID"]!,
     );
 
@@ -59,6 +59,20 @@ export async function timerTrigger(
         page.id,
         createdItemId,
       );
+    }
+
+    // Notion のデータベースからアーカイブされたアイテムを取得
+    const archivedPages = await notionClient.getArchivedDatabaseItem(
+      process.env["NOTION_DATABASE_ID"]!,
+    );
+
+    for (const page of archivedPages) {
+      const azureBoardItemId = page.properties["Azure Board Item Id"].number;
+
+      // Azure Boards のアイテム ID が設定されている場合は、アイテムをアーカイブ
+      if (azureBoardItemId != null) {
+        await azureBoardsClient.deleteWorkItem(token, azureBoardItemId);
+      }
     }
   } catch (error) {
     c.error(error);

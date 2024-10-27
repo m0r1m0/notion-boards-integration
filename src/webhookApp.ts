@@ -70,7 +70,7 @@ app.get("/notion-to-boards", async (c) => {
     const { token } = await credential.getToken(azureDevopsScope);
 
     // Notion のデータベースからアイテムを取得
-    const pages = await notionClient.getDatabaseItems(
+    const pages = await notionClient.getActiveDatabaseItem(
       env<Env, ContextType>(c).NOTION_DATABASE_ID,
     );
 
