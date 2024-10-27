@@ -117,6 +117,29 @@ class NotionClient {
     }
   }
 
+  async deleteDatabaseItem(notionItemId: string) {
+    const url = `https://api.notion.com/v1/pages/${notionItemId}`;
+    const options = {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${this.secret}`,
+        "Content-Type": "application/json",
+        "Notion-Version": "2022-06-28",
+      },
+    };
+
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`Error deleting database item: ${response.statusText}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error("Error deleting database item:", error);
+      throw error;
+    }
+  }
+
   getTitlePropertyText(titlePropertyValue: TitleProperty): string {
     return titlePropertyValue.title.map((t) => t.text.content).join("");
   }

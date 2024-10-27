@@ -5,6 +5,7 @@ import AzureBoardsClient from "./libs/azureBoardsClient";
 import NotionClient from "./libs/notionClient";
 import {
   BoardsCreatedWebhookRequestBody,
+  BoardsDeletedWebhookRequestBody,
   BoardsUpdateWebhookRequestBody,
 } from "./types/boards";
 
@@ -100,7 +101,10 @@ app.get("/notion-to-boards", async (c) => {
     }
   } catch (error) {
     console.error(error);
-    return c.json({ message: error.message });
+    if (error instanceof Error) {
+      return c.json({ message: error.message });
+    }
+    return c.json({ message: "Error." });
   }
 
   return c.json({ message: "Completed." });
@@ -174,6 +178,20 @@ app.post("/boards-created-webhook", async (c) => {
   );
 
   return c.json({ created });
+});
+
+app.post("/boards-deleted-webhook", async (c) => {
+  const body = await c.req.json<BoardsDeletedWebhookRequestBody>();
+  const notionPageId = body.resource.fields["Custom.notion_page_id"];
+
+  if (notionPageId == null) {
+    return c.json({ message: "Not found Notion page id." });
+  }
+
+  // Notionのアイテムを削除
+  const notionClient = c.get("notionClient");
+  const deleted = await notionClient.deleteDatabaseItem(notionPageId);
+  return c.json(deleted);
 });
 
 export default app;

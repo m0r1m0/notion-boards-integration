@@ -22,9 +22,9 @@ export async function timerTrigger(
   c.log("Timer function processed request.");
   try {
     const azureBoardsClient = new AzureBoardsClient({
-      organization: process.env["AZURE_BOARDS_ORGANIZATION"],
-      project: process.env["AZURE_BOARDS_PROJECT"],
-      assignedTo: process.env["AZURE_BOARDS_ASSIGNED_TO"],
+      organization: process.env["AZURE_BOARDS_ORGANIZATION"]!,
+      project: process.env["AZURE_BOARDS_PROJECT"]!,
+      assignedTo: process.env["AZURE_BOARDS_ASSIGNED_TO"]!,
     });
     const notionClient = new NotionClient(process.env["NOTION_SECRET"]!);
 
@@ -32,7 +32,7 @@ export async function timerTrigger(
 
     // Notion のデータベースからアイテムを取得
     const pages = await notionClient.getDatabaseItems(
-      process.env["NOTION_DATABASE_ID"],
+      process.env["NOTION_DATABASE_ID"]!,
     );
 
     for (const page of pages) {

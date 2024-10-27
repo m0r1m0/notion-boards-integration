@@ -29,10 +29,6 @@ interface Resource {
       oldValue: string;
       newValue: string;
     };
-    [key: string]: {
-      oldValue: string | number;
-      newValue: string | number;
-    };
   };
   _links: Links;
   url: string;
@@ -93,6 +89,30 @@ export interface BoardsCreatedWebhookRequestBody {
       ["System.Status"]: "New" | "Approved" | "Committed" | "Done" | "Removed";
       ["System.ChangedBy"]: string;
       ["System.CreatedBy"]: string;
+    };
+  };
+  resourceVersion: string;
+  resourceContainers: ResourceContainers;
+  createdDate: string;
+}
+
+export interface BoardsDeletedWebhookRequestBody {
+  subscriptionId: string;
+  notificationId: number;
+  id: string;
+  eventType: string;
+  publisherId: string;
+  message: Message;
+  detailedMessage: Message;
+  resource: {
+    id: number;
+    rev: number;
+    fields: {
+      ["System.Title"]: string;
+      ["System.Status"]: "New" | "Approved" | "Committed" | "Done" | "Removed";
+      ["System.ChangedBy"]: string;
+      ["System.CreatedBy"]: string;
+      ["Custom.notion_page_id"]?: string;
     };
   };
   resourceVersion: string;
