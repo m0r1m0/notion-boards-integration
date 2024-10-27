@@ -145,6 +145,11 @@ class AzureBoardsClient {
       },
       {
         op: "replace",
+        path: "/fields/System.AssignedTo",
+        value: this.assignedTo,
+      },
+      {
+        op: "replace",
         path: "/fields/Custom.notion_page_id",
         value: notionPageId,
       },
